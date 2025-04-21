@@ -14,7 +14,7 @@ game_loop:
     CHECK_TIE
     SWITCH_PLAYER_TURN
 win: 
-	PRINT_BOARD
+	#PRINT_BOARD
 	PRINT_WIN
 	HALT # End program
 tie:
