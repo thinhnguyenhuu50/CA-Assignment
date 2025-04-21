@@ -1,3 +1,10 @@
+## Board game
+```
+□0□□1□□2␣␣3␣␣4␣␣5␣␣6␣␣7␣␣8␣␣9␣␣10␣␣11␣␣12␣␣13␣␣14
+0X□□X□□X
+1X□□X□□X
+2X□□X□□X
+```
 To address the query, I’ll provide a Finite State Machine (FSM) outline for the Gomoku game based on the requirements in the "Assignment_sem_242.pdf" document, followed by a breakdown into reasonably small procedures or macros for implementation in MIPS assembly language using the MARS simulator. The game is a two-player Gomoku on a 15x15 board, where players alternate placing 'X' (Player 1) or 'O' (Player 2) to achieve five in a row horizontally, vertically, or diagonally, with specific input and output requirements.
 
 ---
