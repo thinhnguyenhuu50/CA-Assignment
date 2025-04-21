@@ -1,2 +1,2 @@
 .data
-	board
+.extern	board 752
