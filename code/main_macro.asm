@@ -1,9 +1,11 @@
 .data
 	init_board: 			.asciiz "   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14\n0                                             \n1                                             \n3                                             \n2                                             \n4                                             \n5                                             \n6                                             \n7                                             \n8                                             \n9                                             \n10                                            \n11                                            \n12                                            \n13                                            \n14                                            "
+	X:						.asciiz "X"
+	O: 						.asciiz "O"
 .text
 .macro INIT    
 	strcpy(board, init_board)
-	put(14,14)
+	put(14, 14, O)
 .end_macro
 
 .macro PRINT_BOARD
@@ -38,9 +40,10 @@
 	syscall
 .end_macro
 ########################################################################
-.macro put (%x, %y)
-	add $t0, $zero, %x
-	add $t1, $zero, %y
+.macro put (%x, %y, $c)
+	add $a0, $zero, %x
+	add $a1, $zero, %y
+	lb $a2, $c
 	jal put
 .end_macro
 

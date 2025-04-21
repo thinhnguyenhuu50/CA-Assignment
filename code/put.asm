@@ -1,16 +1,15 @@
-.include "globle_var.asm"
-.data
-	X: 				.asciiz "X"
+# Arguments:
+#   $a0: x
+#   $a1: y
+#	$a2: X or O
 .text
 .globl put
 put:
-	li $t4, 50
-	mul $t0, $t0, 47
-	mul $t1, $t1, 3
-	add $t4, $t0, $t4
-	add $t4, $t1, $t4
-	la $t3, X
-	lb $t3, 0($t3)
-	sb $t3, board($t4)
+	li $t0, 50
+	mul $a0, $a0, 47
+	mul $a1, $a1, 3
+	add $t0, $a0, $t0
+	add $t0, $a1, $t0
+	sb $a2, board($t0)
 	
 	jr $ra
