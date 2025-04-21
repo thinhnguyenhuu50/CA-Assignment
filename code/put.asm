@@ -4,7 +4,7 @@
 .text
 .globl put
 put:
-	li $t4, 52
+	li $t4, 50
 	mul $t0, $t0, 47
 	mul $t1, $t1, 3
 	add $t4, $t0, $t4
