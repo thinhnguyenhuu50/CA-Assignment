@@ -1,10 +1,19 @@
+# PUT
 .macro put (%x, %y, $c)
 	add $a0, $zero, %x
 	add $a1, $zero, %y
 	lb $a2, $c
 	jal put
 .end_macro
-
+# GET
+.macro get(%x, %y, %c)
+	add $a0, $zero, %x
+	add $a1, $zero, %y
+	jal get
+	move %c, $v0
+.end_macro
+#############################
+# STRCPY
 .macro strcpy ($des, $src)
 	la $a0, $des
 	la $a1, $src
@@ -21,11 +30,4 @@
 	li $v0, 11
 	add $a0, $zero, %x
 	syscall
-.end_macro
-
-.macro get(%x, %y, %c)
-	add $a0, $zero, %x
-	add $a1, $zero, %y
-	jal get
-	move %c, $v0
 .end_macro
