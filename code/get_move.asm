@@ -1,3 +1,4 @@
+.include "macro.asm"
 # Arguments:
 #   $a0: current player
 #	$v0: x
@@ -32,7 +33,7 @@ print_prompt:
     # Read input string
     li $v0, 8         # Syscall to read string
     la $a0, input_buffer
-    li $a1, 20        # Max length of input
+    li $a1, 10        # Max length of input
     syscall
 
     # Call parse_input to validate and extract x,y
@@ -129,13 +130,8 @@ end_parse_y:
     bgt $s2, 14, invalid  # y > 14
 
     # Step 4: Check if board position is empty
-    # Calculate index = y * 15 + x
-    mul $t0, $s2, 15      # t0 = y * 15
-    add $t0, $t0, $s1     # t0 = y * 15 + x
-    la $t1, board         # Load board base address
-    add $t1, $t1, $t0     # t1 = address of board[y*15 + x]
-    lb $t2, 0($t1)        # Load board position
-    bne $t2, 32, invalid  # If not ' ' (ASCII 46), position is occupied
+    get($s1, $s2, $v0)
+    bne $v0, empty, invalid  # If not empty, position is occupied
 
     # Step 5: Valid input, return x, y
     move $v0, $s1         # Return x

@@ -8,6 +8,7 @@
 
 .macro INIT    
 	strcpy(board, init_board)
+	li player, 1
 .end_macro
 
 .macro PRINT_BOARD
@@ -17,13 +18,19 @@
 .end_macro
 
 .macro GET_MOVE
-	#move $a0, player
-	#jal get_move
-	#print_int($v0)
-	#print_int($v1)
+	move $a0, player
+	jal get_move
 .end_macro
 
 .macro UPDATE_BOARD
+	move $t0, $v0
+	move $t1, $v1
+	bne player, 1, else
+	put($t0,$t1,X)
+	j end_if
+else:
+	put($t0,$t1,O)
+end_if:
 .end_macro
 
 .macro CHECK_WIN
@@ -33,6 +40,8 @@
 .end_macro
 
 .macro SWITCH_PLAYER_TURN
+	xori player, player, 3
+	j game_loop
 .end_macro
 
 .macro PRINT_WIN

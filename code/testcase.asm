@@ -1,9 +1,15 @@
 .include "macro.asm"
 .data
 	X: 	.asciiz "X"
+	init_board: 			.asciiz "   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14\n0                                             \n1                                             \n2                                             \n3                                             \n4                                             \n5                                             \n6                                             \n7                                             \n8                                             \n9                                             \n10                                            \n11                                            \n12                                            \n13                                            \n14                                            \n"
 .text
 ##########################################################
+#main:
+	jal test_get_move
+	li $v0, 10
+	syscall
 .globl test_put
+.globl test_get_move
 test_put:
     addi $sp, $sp, -12       # Allocate space for $ra, $s0, $s1
     sw $ra, 8($sp)           # Store return address
@@ -39,3 +45,19 @@ end_outer:
     # Return to caller
     jr $ra
 ##########################################################
+test_get_move:
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	
+	strcpy(board, init_board)
+	
+	li $a0, 1
+	jal get_move
+	move $t0, $v0
+	move $t1, $v1
+	print_int($t0)
+	print_int($t1)
+	
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
