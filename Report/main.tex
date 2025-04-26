@@ -30,6 +30,7 @@
     fontupper=\ttfamily % Use typewriter font for the content
   ]{#1}%
 }
+\newcommand{\vs}{\textvisiblespace}
 
 \begin{document}
 \begin{titlepage}
@@ -45,17 +46,18 @@
 % \input{contents/4_Algorithms_and_Logic.tex}
 % \input{contents/5_Error_Handling.tex}
 % \input{contents/6_Conclusion.tex}
-\begin{code}
-    # Example MIPS code
-    add $t0, $s0, $s1
-    sub $t1, $s2, $s3
-    mul $t2, $t0, $t1
-    div $t2, $t3
-    mflo $t4
-    .macro INIT    
-    strcpy(board, init_board)
-    li player, 1
-    li move_count, 224
-    .end_macro
-\end{code}
+
+% \begin{code}
+%     # Example MIPS code
+%     add $t0, $s0, $s1
+%     sub $t1, $s2, $s3
+%     mul $t2, $t0, $t1
+%     div $t2, $t3
+%     mflo $t4
+%     .macro INIT    
+%     strcpy(board, init_board)
+%     li player, 1
+%     li move_count, 224
+%     .end_macro
+% \end{code}
 \end{document}

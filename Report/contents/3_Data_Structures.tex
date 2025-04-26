@@ -1,10 +1,45 @@
 \section{Cấu trúc dữ liệu}
 Trong việc triển khai trò chơi Gomoku, bàn cờ được biểu diễn dưới dạng một mảng gồm 752 byte trong bộ nhớ, bao gồm cả hàng đầu hiển thị nhãn cột và 15 hàng ứng với lưới trò chơi 15x15. Mảng này, được gọi là \var{board}, được thiết kế nhằm mô phỏng giao diện hiển thị của terminal, bao gồm các ký tự xuống dòng, tạo điều kiện thuận lợi cho việc trực quan hóa trạng thái của trò chơi.
 
+Mảng \var{board} được cấu trúc thành 16 dòng, mỗi dòng gồm 47 byte, trong đó có ký tự xuống dòng (\textbackslash n) ở cuối dòng. Điều này tạo nên tổng kích thước là \( 16 \times 47 = 752 \) byte, phù hợp với đặc tả đã cung cấp. Bố cục của mảng có thể được hình dung như một mảng hai chiều với kích thước \( 47 \times 16, \)
+trong đó:
+\begin{itemize}
+    \item \textbf{Dòng 0:} Là header, hiển thị nhãn cột từ 0 đến 14. Dòng này bắt đầu với ba khoảng trắng để căn lề, sau đó liệt kê các số cột, được định dạng sao cho phù hợp với các ô chơi bên dưới. Nội dung ban đầu là:
+          \begin{center}
+              \ttfamily
+              \vs \vs \vs 0\vs \vs 1\vs \vs 2\vs \vs 3\vs \vs 4\vs \vs 5\vs \vs 6\vs \vs 7\vs \vs 8\vs \vs 9\vs 10\vs 11\vs 12\vs 13\vs 14\textbackslash n
+          \end{center}
+    \item \textbf{Các dòng 1 đến 15:} Đại diện cho các hàng từ 0 đến 14 của bàn cờ. Mỗi dòng bắt đầu với nhãn hàng (ví dụ, “0 ” cho hàng 0, “10 ” cho hàng 10), sau đó là 15 ô chơi và kết thúc bằng ký tự xuống dòng. Ví dụ, hàng 0 được khởi tạo như sau:
+          \begin{center}
+              \ttfamily
+              0\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+          \end{center}
+          Trong mỗi dòng, nhãn của hàng chiếm 3 byte đầu tiên, đảm bảo căn lề nhất quán:
+          \begin{itemize}
+              \item Đối với các hàng 0 đến 9, nhãn là số của hàng theo sau là hai khoảng trắng (ví dụ “\texttt{1\vs\vs}”).
+              \item Đối với các hàng 10 đến 14, nhãn là số có hai chữ số theo sau là một khoảng trắng (ví dụ “\texttt{10\vs}”).
+          \end{itemize}
+          Sau nhãn, mỗi ô trong 15 ô được biểu diễn bởi chuỗi 3 byte: hai khoảng trắng ở đầu, ký tự nội dung của ô ('.', 'X', hoặc 'O'). Ví dụ, ô trống được biểu diễn là “.”, trong khi ô chứa quân của Người chơi 1 được biểu diễn là “X”. Định dạng này đảm bảo rằng ký tự trong ô được căn chỉnh đồng nhất, hỗ trợ việc hiển thị và thao tác. Hình \ref{fig:board_array} minh họa cách mà mảng \var{board} được tổ chức trong bộ nhớ, với các ký tự đại diện cho các ô chơi và nhãn hàng/cột được căn chỉnh để dễ đọc.
+\end{itemize}
 
 \begin{figure}[!htbp]
     \centering
     \ttfamily
-    \textvisiblespace\textvisiblespace\textvisiblespace\textvisiblespace 1\textvisiblespace
+    \vs \vs \vs 0\vs \vs 1\vs \vs 2\vs \vs 3\vs \vs 4\vs \vs 5\vs \vs 6\vs \vs 7\vs \vs 8\vs \vs 9\vs 10\vs 11\vs 12\vs 13\vs 14\textbackslash n
+    1\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    2\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    3\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs \( \textcolor{blue}{\mathsf{X}} \)\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    4\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs \textcolor{red}{\textbf{O}}\vs\vs \( \textcolor{blue}{\mathsf{X}} \)\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    5\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs \textcolor{red}{\textbf{O}}\vs\vs \textcolor{red}{\textbf{O}}\vs\vs \textcolor{red}{\textbf{O}}\vs\vs \( \textcolor{blue}{\mathsf{X}} \)\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    6\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs \( \textcolor{blue}{\mathsf{X}} \)\vs\vs .\vs\vs \( \textcolor{blue}{\mathsf{X}} \)\vs\vs \textcolor{red}{\textbf{O}}\vs\vs \textcolor{red}{\textbf{O}}\vs\vs \( \textcolor{blue}{\mathsf{X}} \)\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    7\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs \( \textcolor{blue}{\mathsf{X}} \)\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    8\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    9\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    10\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    11\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    12\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    13\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
+    14\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\vs\vs .\textbackslash n
     \caption{Mảng dữ liệu của bàn cờ}
+    \label{fig:board_array}
 \end{figure}
