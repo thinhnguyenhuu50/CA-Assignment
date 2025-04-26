@@ -1,4 +1,3 @@
-\RequirePackage{extramarks}[=v4]
 \documentclass[12pt,twoside]{hcmut_report}
 \upperuniname{ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH}
 \uniname{TRƯỜNG ĐẠI HỌC BÁCH KHOA}
@@ -15,10 +14,7 @@
     Nguyễn Chí Thanh,   2313078
     Nguyễn Thái Sơn,    2312968
 }
-
-\usepackage{minted}
-\usemintedstyle{sas}
-
+\usepackage{codespace}
 \begin{document}
 \begin{titlepage}
     \coverpage
@@ -28,9 +24,22 @@
 \end{titlepage}
 \setcounter{page}{1}
 % \input{contents/1_Introduction.tex}
-\input{contents/2_Program_Structure.tex}
+% \input{contents/2_Program_Structure.tex}
 % \input{contents/3_Algorithms_and_Logic.tex}
 % \input{contents/4_Data_Structures.tex}
 % \input{contents/5_Error_Handling.tex}
 % \input{contents/6_Conclusion.tex}
+\begin{code}
+    # Example MIPS code
+    add $t0, $s0, $s1
+    sub $t1, $s2, $s3
+    mul $t2, $t0, $t1
+    div $t2, $t3
+    mflo $t4
+    .macro INIT    
+    strcpy(board, init_board)
+    li player, 1
+    li move_count, 224
+    .end_macro
+\end{code}
 \end{document}

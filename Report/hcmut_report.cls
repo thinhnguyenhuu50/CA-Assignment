@@ -27,7 +27,6 @@
 \usetikzlibrary{calc,shapes,arrows,positioning}
 \RequirePackage{pgffor} % For loops
 \RequirePackage{xstring} % For string manipulation
-\RequirePackage{extramarks}
 \RequirePackage[absolute,overlay]{textpos}
 \setlength{\TPVertModule}{1cm}  % Set vertical measurement units to cm
 \setlength{\TPHorizModule}{1cm}  % Set horizontal measurement units to cm
