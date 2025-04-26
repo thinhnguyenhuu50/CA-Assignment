@@ -34,3 +34,12 @@
 	add $a0, $zero, %x
 	syscall
 .end_macro
+
+.macro print_str (%str)
+	.data
+			msg: .asciiz %str
+	.text
+	li $v0, 4
+	la $a0, msg
+	syscall
+.end_macro
