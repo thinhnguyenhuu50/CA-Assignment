@@ -12,6 +12,7 @@
 .macro INIT    
 	strcpy(board, init_board)
 	li player, 1
+	li move_count, 0
 .end_macro
 
 .macro PRINT_BOARD
