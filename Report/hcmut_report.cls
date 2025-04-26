@@ -41,6 +41,7 @@
 \RequirePackage{enumitem}
 \RequirePackage{multicol}
 \RequirePackage{stackrel}
+\RequirePackage{xcolor}
 
 % Some packages that seem pretty redundant
 \RequirePackage{geometry,graphicx,indentfirst,setspace}

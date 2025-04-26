@@ -15,6 +15,22 @@
     Nguyễn Thái Sơn,    2312968
 }
 \usepackage{codespace}
+
+\definecolor{light-gray}{gray}{0.95}
+\newcommand{\var}[1]{%
+  \tcbox[%
+    on line, % Keeps the box inline with text
+    boxsep=1pt, % Padding inside the box
+    left=2pt, right=2pt, top=2pt, bottom=2pt, % Padding adjustments
+    colback=gray!20!white, % Background color
+    colframe=gray!20!white,
+    boxrule=0pt,
+    rounded corners, % Enable rounded corners
+    arc=3pt, % Radius of the rounded corners
+    fontupper=\ttfamily % Use typewriter font for the content
+  ]{#1}%
+}
+
 \begin{document}
 \begin{titlepage}
     \coverpage
@@ -26,7 +42,7 @@
 % \input{contents/1_Introduction.tex}
 % \input{contents/2_Program_Structure.tex}
 \input{contents/3_Data_Structures.tex}
-\input{contents/4_Algorithms_and_Logic.tex}
+% \input{contents/4_Algorithms_and_Logic.tex}
 % \input{contents/5_Error_Handling.tex}
 % \input{contents/6_Conclusion.tex}
 \begin{code}

@@ -1,1 +1,10 @@
 \section{Cấu trúc dữ liệu}
+Trong việc triển khai trò chơi Gomoku, bàn cờ được biểu diễn dưới dạng một mảng gồm 752 byte trong bộ nhớ, bao gồm cả hàng đầu hiển thị nhãn cột và 15 hàng ứng với lưới trò chơi 15x15. Mảng này, được gọi là \var{board}, được thiết kế nhằm mô phỏng giao diện hiển thị của terminal, bao gồm các ký tự xuống dòng, tạo điều kiện thuận lợi cho việc trực quan hóa trạng thái của trò chơi.
+
+
+\begin{figure}[!htbp]
+    \centering
+    \ttfamily
+    \textvisiblespace\textvisiblespace\textvisiblespace\textvisiblespace 1\textvisiblespace
+    \caption{Mảng dữ liệu của bàn cờ}
+\end{figure}
