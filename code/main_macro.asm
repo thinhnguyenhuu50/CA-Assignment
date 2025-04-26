@@ -12,7 +12,7 @@
 .macro INIT    
 	strcpy(board, init_board)
 	li player, 1
-	li move_count, 0
+	li move_count, 224
 .end_macro
 
 .macro PRINT_BOARD
@@ -56,10 +56,14 @@ end_if:
 
 .macro PRINT_WIN
 	jal win_process
+	jal play_again
+	beq $v0, 1, main
 .end_macro
 
 .macro PRINT_TIE
 	jal tie_process
+	jal play_again
+	beq $v0, 1, main
 .end_macro
 
 .macro HALT

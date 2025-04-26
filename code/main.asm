@@ -20,4 +20,4 @@ win:
 tie:
 	PRINT_BOARD
 	PRINT_TIE
-	HALT
+	HALT # End program
