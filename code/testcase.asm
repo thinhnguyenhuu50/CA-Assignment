@@ -1,6 +1,7 @@
 .include "macro.asm"
 .data
 	X: 	.asciiz "X"
+	O:  .asciiz "O"
 	init_board: 			.asciiz "   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14\n0                                             \n1                                             \n2                                             \n3                                             \n4                                             \n5                                             \n6                                             \n7                                             \n8                                             \n9                                             \n10                                            \n11                                            \n12                                            \n13                                            \n14                                            \n"
 .text
 ##########################################################
@@ -58,6 +59,26 @@ test_get_move:
 	print_int($t0)
 	print_int($t1)
 	
+	lw $ra, 0($sp)
+	addi $sp, $sp, 4
+	jr $ra
+
+test_check_win:
+	# push
+	addi $sp, $sp, -4
+	sw $ra, 0($sp)
+	# body
+	strcpy(board, init_board)
+	put(0, 0, X)
+	put(1, 0, X)
+	put(2, 0, X)
+	put(3, 0, X)
+	put(4, 0, X)
+	li $a0, 3
+	li $a1, 0
+	jal check_win
+	print_int($v0)
+	# pop
 	lw $ra, 0($sp)
 	addi $sp, $sp, 4
 	jr $ra
