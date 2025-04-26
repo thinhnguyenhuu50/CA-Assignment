@@ -7,10 +7,10 @@ Chương trình được chia thành một số thủ tục chính, mỗi thủ 
 FSM bao gồm bốn trạng thái chính:
 
 \begin{itemize}
-    \item \textbf{Khởi tạo}: Thiết lập bàn cờ và các biến khởi đầu của trò chơi.
-    \item \textbf{Lượt chơi}: Quản lý việc nhận và xác thực nước đi từ người chơi hiện hành.
-    \item \textbf{Kết thúc trò chơi (Thắng)}: Xử lý trường hợp khi một người chơi chiến thắng.
-    \item \textbf{Kết thúc trò chơi (Hòa)}: Xử lý trường hợp trò chơi kết thúc hòa khi bàn cờ đầy mà không có người thắng.
+    \item \textbf{Initialization}: Thiết lập bàn cờ và các biến khởi đầu của trò chơi.
+    \item \textbf{Player Turn}: Quản lý việc nhận và xác thực nước đi từ người chơi hiện hành.
+    \item \textbf{Game Over (Win)}: Xử lý trường hợp khi một người chơi chiến thắng.
+    \item \textbf{Game Over (Tie)}: Xử lý trường hợp trò chơi kết thúc hòa khi bàn cờ đầy mà không có người thắng.
 \end{itemize}
 
 Sự chuyển đổi giữa các trạng thái được điều khiển bởi các điều kiện cụ thể, như việc phát hiện nước thắng hoặc khi bàn cờ không còn vị trí trống. Hình \ref{fig:fsm} minh họa FSM với các trạng thái và mối quan hệ chuyển tiếp giữa chúng.
