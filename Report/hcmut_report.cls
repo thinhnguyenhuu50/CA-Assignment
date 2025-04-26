@@ -3,9 +3,9 @@
 
 \ProvidesClass{hcmut_report}
 
-\DeclareOption*{\PassOptionsToClass{\CurrentOption}{report}}
+\DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}
 \ProcessOptions\relax
-\LoadClass[a4paper]{report}
+\LoadClass[a4paper]{article}
 
 % Set up font
 % \RequirePackage[fontsize=12pt]{scrextend}
@@ -152,8 +152,8 @@
 \fi
 
 \fancyfoot[LO]{\scriptsize \ttfamily Trang \thepage/\pageref{LastPage}}
-\fancyfoot[RO]{\scriptsize \ttfamily Báo cáo Bài thực hành Lab Xử lý tín hiệu số - HK242}
-\fancyfoot[LE]{\scriptsize \ttfamily Báo cáo Bài thực hành Lab Xử lý tín hiệu số - HK242}
+\fancyfoot[RO]{\scriptsize \ttfamily Báo cáo Bài tập lớn Kiến trúc máy tính - HK242}
+\fancyfoot[LE]{\scriptsize \ttfamily Báo cáo Bài tập lớn Kiến trúc máy tính - HK242}
 \fancyfoot[RE]{\scriptsize \ttfamily Trang \thepage/\pageref{LastPage}}
 %------------------------------------------------------------------------------------------------------------------------%
 \tcbset {
