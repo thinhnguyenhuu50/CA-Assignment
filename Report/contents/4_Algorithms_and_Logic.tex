@@ -1,1 +1,143 @@
 \section{Các giải thuật và logic}
+\subsection{Nhận tọa độ từ người chơi}
+\begin{enumerate}
+    \item \textbf{Nhận tọa độ di chuyển của người chơi trong trò chơi Gomoku}: Chương trình thực hiện một quy trình có cấu trúc để đảm bảo rằng đầu vào được định dạng đúng, nằm trong phạm vi hợp lệ và trùng với một vị trí trên bàn cờ chưa bị chiếm.
+    \item \textbf{Hiển thị thông báo yêu cầu người chơi}: 
+    \begin{itemize}
+        \item Đối với Người chơi 1: "Người chơi 1, vui lòng nhập tọa độ của bạn: "
+        \item Đối với Người chơi 2: "Người chơi 2, vui lòng nhập tọa độ của bạn: "
+    \end{itemize}
+\end{enumerate}
+
+\begin{code}
+    # Display prompt based on current player
+    li $v0, 4         # Syscall to print string
+    beq $s0, 1, print_prompt1
+    la $a0, prompt2   # "Player 2, please input your coordinates: "
+    j print_prompt
+print_prompt1:
+    la $a0, prompt1   # "Player 1, please input your coordinates: "
+print_prompt:
+    syscall
+\end{code}
+
+\begin{enumerate}[resume]    
+    \item \textbf{Đọc đầu vào}: 
+    \begin{itemize}
+        \item Chương trình nhận đầu vào từ người dùng dưới dạng chuỗi thông qua một lệnh gọi hệ thống.
+        \item Dữ liệu nhận được được lưu vào một bộ đệm để xử lý tiếp.
+    \end{itemize}
+\end{enumerate}
+
+\begin{code}
+    # Read input string
+    li $v0, 8         # Syscall to read string
+    la $a0, input_buffer
+    li $a1, 10        # Max length of input
+    syscall
+\end{code}
+
+\begin{enumerate}[resume]
+    \item \textbf{Phân tích đầu vào}: 
+    \begin{itemize}
+        \item Phân tách chuỗi để trích xuất tọa độ x và y theo định dạng ``x,y'', trong đó x và y là số nguyên từ 0 đến 14.
+        \item \textbf{Trích xuất x}: Đọc các ký tự trước dấu phẩy và kiểm tra rằng chúng đều là chữ số, xây dựng giá trị x bằng cách nhân giá trị hiện tại với 10 và cộng thêm chữ số mới.
+        \item \textbf{Bỏ qua dấu phẩy}: Di chuyển qua dấu phẩy để xử lý tiếp phần tọa độ y.
+        \item \textbf{Trích xuất y}: Đọc các chữ số sau dấu phẩy cho đến khi gặp ký tự xuống dòng hoặc ký tự kết thúc, xây dựng giá trị y tương tự như x.
+        \item Nếu bất kỳ ký tự nào không phải là số hoặc định dạng không đúng (ví dụ, thiếu dấu phẩy), đầu vào sẽ bị xem là không hợp lệ.
+    \end{itemize}
+\end{enumerate}
+
+\begin{code}
+parse_x:
+    lb $t0, 0($s0)    # Load current character
+    beq $t0, 44, end_parse_x  # If comma (ASCII 44), end x parsing
+    beq $t0, 0, invalid  # If null, invalid
+    beq $t0, 10, invalid # If newline, invalid
+
+    # Check if character is a digit (0-9)
+    blt $t0, 48, invalid  # < '0'
+    bgt $t0, 57, invalid  # > '9'
+
+    # Update x = x * 10 + (char - '0')
+    mul $s1, $s1, 10  # x *= 10
+    sub $t0, $t0, 48  # Convert char to integer
+    add $s1, $s1, $t0 # x += digit
+
+    addi $s0, $s0, 1  # Move to next character
+    j parse_x
+
+end_parse_x:
+    addi $s0, $s0, 1  # Skip comma
+    # Step 2: Parse y (digits after comma)
+parse_y:
+    lb $t0, 0($s0)    # Load current character
+    beq $t0, 10, end_parse_y  # If newline, end y parsing
+    beq $t0, 0, end_parse_y   # If null, end y parsing
+
+    # Check if character is a digit
+    blt $t0, 48, invalid  # < '0'
+    bgt $t0, 57, invalid  # > '9'
+
+    # Update y = y * 10 + (char - '0')
+    mul $s2, $s2, 10  # y *= 10
+    sub $t0, $t0, 48  # Convert char to integer
+    add $s2, $s2, $t0 # y += digit
+
+    addi $s0, $s0, 1  # Move to next character
+    j parse_y
+
+end_parse_y:
+\end{code}
+
+\begin{enumerate}[resume]
+    \item \textbf{Kiểm tra tính hợp lệ của tọa độ}:
+    \begin{itemize}
+        \item \textbf{Kiểm tra phạm vi}: Xác nhận rằng cả x và y đều nằm trong phạm vi từ 0 đến 14, tương ứng với bàn cờ 15x15.
+        \item \textbf{Kiểm tra vị trí}: Đảm bảo rằng vị trí tại tọa độ (x, y) trên bàn cờ đang trống.
+    \end{itemize}
+\end{enumerate}
+
+\begin{code}
+    blt $s1, 0, invalid   # x < 0
+    bgt $s1, 14, invalid  # x > 14
+    blt $s2, 0, invalid   # y < 0
+    bgt $s2, 14, invalid  # y > 14
+
+    # Step 4: Check if board position is empty
+    get($s1, $s2, $v0)
+    bne $v0, empty, invalid  # If not empty, position is occupied
+
+    # Step 5: Valid input, return x, y
+    move $v0, $s1         # Return x
+    move $v1, $s2         # Return y
+    j parse_input_exit
+\end{code}
+
+\begin{enumerate}[resume]
+    \item \textbf{Xử lý đầu vào không hợp lệ}: Nếu đầu vào không hợp lệ do định dạng sai như ``a,b'' hoặc `4', giá trị vượt phạm vi như `15,2', hoặc vị trí đã bị chiếm, chương trình sẽ hiển thị thông báo lỗi `Đầu vào không hợp lệ, vui lòng nhập lại' và quay lại bước 1 để yêu cầu người chơi nhập lại.
+\end{enumerate}
+
+\begin{code}
+    # Check if input is invalid
+    li $t0, -1
+    beq $v0, $t0, invalid_input
+
+    # Input is valid, return x,y
+	# x already in v0
+	# y in v1
+    j get_move_exit
+
+invalid_input:
+    # Print error message
+    li $v0, 4
+    la $a0, error_msg # "Invalid input, try again"
+    syscall
+    j input_loop      # Re-prompt
+\end{code}
+
+\begin{enumerate}[resume]
+    \item \textbf{Trả về tọa độ hợp lệ}: Khi đầu vào vượt qua tất cả các kiểm tra, chương trình trả về tọa độ (x, y) để sử dụng trong logic trò chơi, ghi nhận nước đi của người chơi trên bàn cờ.
+\end{enumerate}
+
+Quy trình trên đảm bảo rằng chỉ những nước đi hợp lệ được chấp nhận, đáp ứng các yêu cầu của bàn cờ 15x15 và định dạng đầu vào dự kiến, mang lại trải nghiệm người dùng thân thiện và chính xác.
