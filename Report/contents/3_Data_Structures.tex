@@ -53,7 +53,8 @@ Thủ tục \var{put} chịu trách nhiệm đặt quân cờ của người ch�
     \item \var{\$a1}: Tọa độ y (dọc, hàng), có giá trị từ 0 đến 14.
     \item \var{\$a2}: Ký tự cần đặt, có thể là `\texttt{X}' hoặc `\texttt{O}'.
 \end{itemize}
-Chức năng tính toán một độ lệch bộ nhớ trong mảng \var{board} và lưu ký tự vào vị trí tương ứng. Cụ thể như sau:
+
+Thủ tục \var{put} tính toán một độ lệch bộ nhớ trong mảng \var{board} và lưu ký tự vào vị trí tương ứng. Cụ thể như sau:
 \begin{code}
 put:
     li $t0, 50
@@ -66,4 +67,29 @@ put:
     jr $ra
 \end{code}
 
-Offset được tính theo công thức: \var{50 + x * 47 + y * 3}. Hằng số 50 đại diện cho offset cơ sở, tức là vị trí bắt đầu của ô chơi đầu tiên (hàng 0, cột 0) sau khi đã loại trừ hàng header và định dạng ban đầu ở hàng chơi đầu tiên. Nhân tọa độ \var{x} với 47 tính đến sự đóng góp của vị trí cột trong bố cục theo hàng, khi mỗi hàng chiếm 47 byte. Nhân tọa độ \var{y} với 3 điều chỉnh vị trí trong hàng, vì mỗi ô chơi có sự dịch chuyển vị trí cố định. Offset cuối cùng, được lưu trong \var{\$t0}, chỉ định chính xác byte trong mảng \var{board} nơi quân cờ sẽ được đặt. Lệnh \var{sb} (store byte) ghi ký tự từ \var{\$a2} vào địa chỉ bộ nhớ \var{board(\$t0)}. Ví dụ: Tại tọa độ (0, 0), offset là 50, tương ứng với vị trí của dấu chấm đầu tiên trong hàng "0  .  .  ...".
+Offset được tính theo công thức: \( 50 + x * 47 + y * 3 \). Hằng số 50 đại diện cho offset cơ sở, tức là vị trí bắt đầu của ô chơi đầu tiên (hàng 0, cột 0) sau khi đã loại trừ hàng header và định dạng ban đầu ở hàng chơi đầu tiên. Nhân tọa độ \var{x} với 47 tính đến sự đóng góp của vị trí cột trong bố cục theo hàng, khi mỗi hàng chiếm 47 byte. Nhân tọa độ \var{y} với 3 điều chỉnh vị trí trong hàng, vì mỗi ô chơi có sự dịch chuyển vị trí cố định. Offset cuối cùng, được lưu trong \var{\$t0}, chỉ định chính xác byte trong mảng \var{board} nơi quân cờ sẽ được đặt. Lệnh \var{sb} (store byte) ghi ký tự từ \var{\$a2} vào địa chỉ bộ nhớ \var{board(\$t0)}. Ví dụ: Tại tọa độ (0, 0), offset là 50, tương ứng với vị trí của dấu chấm đầu tiên trong hàng ``\texttt{0\vs\vs .\vs\vs (...)}''.
+
+Thủ tục \var{get} truy xuất ký tự tại vị trí cụ thể của bàn cờ, cho phép logic trò chơi kiểm tra trạng thái của ô (ví dụ: để xác định điều kiện chiến thắng). Thủ tục này nhận hai đối số:
+\begin{itemize}
+    \item \var{\$a0}: Tọa độ x (cột).
+    \item \var{\$a1}: Tọa độ y (hàng).
+\end{itemize}
+
+Giá trị được trả về:
+\begin{itemize}
+    \item \var{\$v0}: Ký tự tại vị trí đó (có thể là `X', `O', hoặc `.' nếu ô trống).
+\end{itemize}
+
+Việc hiện thực của \var{get} tương tự thủ tục \var{put} về tính toán độ lệch. Công thức \( 50 + x \times 47 + y \times 3 \) giống hệt như trong \var{put}, đảm bảo nhất quán trong truy cập các vị trí của bàn cờ. Lệnh \var{lb} (load byte) đọc ký tự từ \var{board(\$t0)} và lưu vào \var{\$v0}, sau đó trả về cho caller.
+
+\begin{code}
+get:
+	li $t0, 50
+	mul $a0, $a0, 47
+	mul $a1, $a1, 3
+	add $t0, $a0, $t0
+	add $t0, $a1, $t0
+	lb 	$v0, board($t0)
+	
+	jr $ra
+\end{code}
