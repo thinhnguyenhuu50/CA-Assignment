@@ -2,11 +2,12 @@
 .data
 	X: 	.asciiz "X"
 	O:  .asciiz "O"
-	init_board: 			.asciiz "   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14\n0                                             \n1                                             \n2                                             \n3                                             \n4                                             \n5                                             \n6                                             \n7                                             \n8                                             \n9                                             \n10                                            \n11                                            \n12                                            \n13                                            \n14                                            \n"
+	init_board: 			.asciiz "   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14\n0  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n2  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n3  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n4  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n5  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n6  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n7  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n8  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n9  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n10 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n11 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n12 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n13 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n14 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n"
 .text
 ##########################################################
-#main:
-	jal test_get_move
+#.globl main
+# main:
+	jal test_check_win
 	li $v0, 10
 	syscall
 .globl test_put
@@ -70,14 +71,47 @@ test_check_win:
 	# body
 	strcpy(board, init_board)
 	put(0, 0, X)
-	put(1, 0, X)
-	put(2, 0, X)
-	put(3, 0, X)
-	put(4, 0, X)
-	li $a0, 3
-	li $a1, 0
+	put(1, 1, X)
+	put(2, 2, X)
+	put(3, 3, X)
+	put(4, 4, X)
+	put(6, 6, X)
+	put(7, 6, X)
+	put(8, 6, X)
+	put(9, 6, X)
+	put(10, 6, X)
+	
+	# Vertical line
+	put(2, 8, X)
+	put(3, 8, X)
+	put(4, 8, X)
+	put(5, 8, X)
+	
+	# Diagonal O
+	put(8, 2, O)
+	put(9, 3, O)
+	put(10, 4, O)
+	put(11, 5, O)
+	
+	# Scattered
+	put(13, 13, X)
+	put(0, 14, X)
+	put(7, 7, O)
+	put(12, 10, O)
+	put(2, 12, X)
+	put(14, 0, O)
+	
+	li $v0, 4           # Syscall for print string
+    la $a0, board      
+    syscall
+    
+	li $a0, 7
+	li $a1, 7
 	jal check_win
-	print_int($v0)
+
+	move $s0, $v0
+	print_str("Returned value $v0 = ")
+	print_int($s0)
 	# pop
 	lw $ra, 0($sp)
 	addi $sp, $sp, 4
