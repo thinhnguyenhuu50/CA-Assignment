@@ -124,8 +124,8 @@ end_parse_y:
     beq $v0, $t0, invalid_input
 
     # Input is valid, return x,y
-	# x already in v0
-	# y in v1
+	# x already in $v0
+	# y in $v1
     j get_move_exit
 
 invalid_input:
@@ -135,6 +135,8 @@ invalid_input:
     syscall
     j input_loop      # Re-prompt
 \end{code}
+
+
 
 \begin{enumerate}[resume]
     \item \textbf{Trả về tọa độ hợp lệ}: Khi đầu vào vượt qua tất cả các kiểm tra, chương trình trả về tọa độ (x, y) để sử dụng trong logic trò chơi, ghi nhận nước đi của người chơi trên bàn cờ.
