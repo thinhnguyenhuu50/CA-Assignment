@@ -26,19 +26,19 @@ check_win:
 	li $s1, 4
 check_win_for:
 	beqz $s1, check_win_exit
+	addi $s1, $s1, -1
 	#$s2 = count
-	addi $s2, $0, 1
+	li $s2, 1
 #Direction (+)
 	lw $s3, 4($sp)
 	lw $s4, 8($sp)
 check_win_loop1:
-la $t0, Dx
 sll $t1, $s1, 2
-add $t0, $t0, $t1 
+la $t0, Dx
+add $t0, $t0, $t1
 lw $t0, 0($t0)
 add $s3, $s3, $t0
 la $t0, Dy
-sll $t1, $s1, 2
 add $t0, $t0, $t1 
 lw $t0, 0($t0)
 add $s4, $s4, $t0
@@ -52,7 +52,7 @@ get($s3, $s4, $t0)
 bne $t0, $s0, check_win_exit1
 
 addi $s2, $s2, 1
-addi $t0, $0, 4
+li $t0, 4
 blt $t0, $s2, check_win_true
 j check_win_loop1
 
@@ -61,13 +61,12 @@ check_win_exit1:
 	lw $s3, 4($sp)
 	lw $s4, 8($sp)
 check_win_loop2:
-la $t0, Dx
 sll $t1, $s1, 2
+la $t0, Dx
 add $t0, $t0, $t1 
 lw $t0, 0($t0)
 sub $s3, $s3, $t0
 la $t0, Dy
-sll $t1, $s1, 2
 add $t0, $t0, $t1 
 lw $t0, 0($t0)
 sub $s4, $s4, $t0
@@ -81,13 +80,11 @@ get($s3, $s4, $t0)
 bne $t0, $s0, check_win_exit2
 
 addi $s2, $s2, 1
-addi $t0, $0, 4
+li $t0, 4
 blt $t0, $s2, check_win_true
 j check_win_loop2
 
 check_win_exit2:
-
-addi $s1, $s1, -1
 j check_win_for
 
 check_win_exit:
@@ -99,8 +96,6 @@ li $v0, 1
 
 check_win_return:
 	lw $ra, 0($sp)
-	lw $a0, 4($sp)
-	lw $a1, 8($sp)
 	lw $s0, 12($sp)
 	lw $s1, 16($sp)
 	lw $s2, 20($sp)
