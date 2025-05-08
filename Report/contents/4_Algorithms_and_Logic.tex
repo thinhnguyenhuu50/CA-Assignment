@@ -274,3 +274,90 @@ check_win_return:
 	lw $s4, 28($sp)
 	addi $sp, $sp, 32
 \end{code}
+
+\subsection{Kiểm tra kết quả hòa}
+Đơn giản hơn nhiều so với kiểm tra chiến thắng, ta chỉ cần so sánh số bước đã đi với kích thước bàn cờ (15 x 15) xem đã bằng nhau hay chưa để xác định kết quả hòa: 
+\begin{code}
+    beq move_count, 225, tie # 15x15
+\end{code}
+\subsection{Ghi kết quả trò chơi}
+Sau khi đã xác định kết quá của trò chơi (hòa hoặc có người chơi thắng), chương trình thực hiện ghi kết quả ra console và file "result.txt". 
+
+\subsubsection*{Ghi kết quả chiến thắng: } Chương trình thực hiện tuần tự các bước sau:
+\begin{enumerate}[label = +]
+    \item \textbf{Lưu thanh ghi vào stack:} Để đảm bảo toàn vẹn dữ liệu giống như đã nêu ở phần kiểm tra chiến thắng, chương trình thực hiện lưu lại các thanh ghi như sau:
+    \begin{code}
+        win_process:
+            # Save registers
+            addi $sp, $sp, -12
+            sw $ra, 0($sp)
+            sw $s0, 4($sp)      # for file descriptor
+            sw $t0, 8($sp)      # for msg addr
+        \end{code}
+        Do ta cần dùng thanh ghi \var{\$s0} cho mô tả tập tin, và thêm 1 thanh ghi \var{\$t0} để lưu địa chỉ của thông báo nên chương trình thực hiện lưu thanh ghi \var{\$ra} cùng với 2 thanh ghi này.
+    \item \textbf{Xác định người chơi nào thắng cuộc:} 
+    \begin{code}
+        # Determine winner msg
+        bne $s7, 1, p2_wins # $s7 = player
+        la $a0, p1_win_msg
+        la $t0, p1_win_msg  # store msg addr for later
+        j write_result
+    p2_wins:
+        la $a0, p2_win_msg
+        la $t0, p2_win_msg  # store msg addr for later
+    \end{code}
+
+    \item \textbf{Ghi kết quả ra console:}
+    \begin{code}
+write_result:
+    # Print winner msg to console
+    li $v0, 4
+    syscall
+    \end{code}
+    \item \textbf{Ghi kết quả vào file "result.txt":} Ta cần thực hiện các bước: mở file, ghi thông báo người thắng, ghi bàn cờ, đóng file. Các bước trên được thực hiện bằng đoạn chương trình sau:
+    \begin{code}
+    # Open file "result.txt"
+    li $v0, 13
+    la $a0, result_file
+    li $a1, 9           # Write-only, create, append
+    li $a2, 438         # File mode
+    syscall
+    move $s0, $v0       # Save file descriptor      
+
+    # Write winner msg to file
+    li $v0, 15
+    move $a0, $s0
+    move $a1, $t0       # load msg addr from $t0
+    li $a2, 14          # Size of "Player X wins\n"
+    syscall
+
+    # Write board to file
+    li $v0, 15
+    move $a0, $s0
+    la $a1, board
+    li $a2, 752         # Size of the board
+    syscall
+
+    # Close file
+    li $v0, 16
+    move $a0, $s0
+    syscall
+
+    \end{code}
+    Do giá trị thanh ghi \var{\$a0} và \var{\$a1} thay đổi liên tục xuyên suốt các bước, nên các thanh ghi \var{\$s0} cũng như \var{\$t0} là cần thiết để chương trình thực thi chính xác.
+    
+    
+    Ngoài ra, khi ghi thông báo vào file, vì cả 2 thông báo ``Player 1 wins\textbackslash n''   và ``Player 2 wins\textbackslash n'' có cùng độ dài 14 ký tự, nên ta chỉ cần load integer 14 vào thanh ghi \(\$a2\) cho cả 2 trường hợp. 
+    \item \textbf{Trả dữ liệu của các thanh ghi về như cũ:}
+    \begin{code}
+    # Restore registers
+    lw $t0, 8($sp)       
+    lw $s0, 4($sp)
+    lw $ra, 0($sp)
+    addi $sp, $sp, 12
+    jr $ra
+    \end{code}
+    Sau khi thực hiện xong việc ghi kết quả chiến thắng, chương trình trả dữ liệu của các thanh ghi \var{\$ra}, \var{\$s0}, \var{\$t0}, tiếp tục thực thi những lệnh kế tiếp.
+\end{enumerate}
+\subsubsection*{Ghi kết quả hòa: } Chương trình thực hiện các bước tương tự như ghi kết quả chiến thắng.
+

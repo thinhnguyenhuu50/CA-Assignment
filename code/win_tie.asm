@@ -1,7 +1,7 @@
 .data
 result_file: .asciiz "result.txt"
-player1_win_msg: .asciiz "Player 1 wins\n"
-player2_win_msg: .asciiz "Player 2 wins\n"
+p1_win_msg: .asciiz "Player 1 wins\n"
+p2_win_msg: .asciiz "Player 2 wins\n"
 tie_msg: .asciiz "Tie\n"
 
 .text
@@ -14,17 +14,17 @@ win_process:
     # Save registers
     addi $sp, $sp, -12
     sw $ra, 0($sp)
-    sw $s0, 4($sp)
-    sw $t0, 8($sp)        
+    sw $s0, 4($sp)      # for file descriptor
+    sw $t0, 8($sp)      # for msg addr  
 
-    # Determine winner message
-    bne $s7, 1, player2_wins # $s7 is current player
-    la $a0, player1_win_msg
-    la $t0, player1_win_msg  # store msg addr to $t0
+    # Determine winner msg
+    bne $s7, 1, p2_wins # $s7 = player
+    la $a0, p1_win_msg
+    la $t0, p1_win_msg  # store msg addr for later
     j write_result
-player2_wins:
-    la $a0, player2_win_msg
-    la $t0, player2_win_msg  # store msg addr to $t0
+p2_wins:
+    la $a0, p2_win_msg
+    la $t0, p2_win_msg  # store msg addr for later
 
 write_result:
     # Print winner msg to console
@@ -34,23 +34,23 @@ write_result:
     # Open file "result.txt"
     li $v0, 13
     la $a0, result_file
-    li $a1, 9
-    li $a2, 438
+    li $a1, 9           # Write-only, create, append
+    li $a2, 438         # File mode
     syscall
-    move $s0, $v0
+    move $s0, $v0       # Save file descriptor      
 
     # Write winner msg to file
     li $v0, 15
     move $a0, $s0
-    move $a1, $t0          # load msg addr from $t0
-    li $a2, 14             # Size of "Player X wins\n"
+    move $a1, $t0       # load msg addr from $t0
+    li $a2, 14          # Size of "Player X wins\n"
     syscall
 
     # Write board to file
     li $v0, 15
     move $a0, $s0
     la $a1, board
-    li $a2, 752
+    li $a2, 752         # Size of the board
     syscall
 
     # Close file
@@ -80,23 +80,23 @@ tie_process:
     # Open file "result.txt"
     li $v0, 13
     la $a0, result_file
-    li $a1, 9  # Write-only, create, append
-    li $a2, 438  # File mode
+    li $a1, 9           # Write-only, create, append
+    li $a2, 438         # File mode
     syscall
-    move $s0, $v0  # Save file descriptor
+    move $s0, $v0       # Save file descriptor
 
     # Write tie msg to file
     li $v0, 15
     move $a0, $s0
     la $a1, tie_msg
-    li $a2, 4  # Size of "Tie\n"
+    li $a2, 4           # Size of "Tie\n"
     syscall
 
     # Write board to file
     li $v0, 15
     move $a0, $s0
     la $a1, board
-    li $a2, 752  # Size of the board
+    li $a2, 752  
     syscall
 
     # Close file
