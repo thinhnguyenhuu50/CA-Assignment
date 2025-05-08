@@ -11,7 +11,7 @@ play_again:
 	sw $ra, 0($sp)
 	# body
 loop:
-	print_str("Do you want to play again (y/n): ")
+	print_str("Do you want to play again?(y/n): ")
 	la $a0, buffer
 	li $a1, 3
 	li $v0 8
