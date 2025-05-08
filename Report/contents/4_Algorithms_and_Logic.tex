@@ -143,3 +143,135 @@ invalid_input:
 \end{enumerate}
 
 Quy trình trên đảm bảo rằng chỉ những nước đi hợp lệ được chấp nhận, đáp ứng các yêu cầu của bàn cờ 15x15 và định dạng đầu vào dự kiến, mang lại trải nghiệm người dùng thân thiện và chính xác.
+
+\subsection{Kiểm tra chiến thắng}
+
+\begin{enumerate}
+\item \textbf{Tham số đầu vào và kết quả trả về:} Hàm nhận 2 tham số tọa độ x và y của lượt vừa đi của người chơi để kiểm tra điều kiện chiến thắng rồi trả về giá trị true hoặc false.  
+\item \textbf{Lưu thanh ghi vào stack trước khi xử lí:} Lưu trữ dữ liệu của các thanh ghi tham số \var{\$a0}, \var{\$a1}, thanh ghi \var{\$ra} và \var{\$s0}, \(\dots\) để sử dụng nhằm tránh mất mát dữ liệu khi gọi hàm.
+\end{enumerate}
+
+\begin{code}
+addi $sp, $sp, -32
+sw $ra, 0($sp)
+sw $a0, 4($sp)
+sw $a1, 8($sp)
+sw $s0, 12($sp)
+sw $s1, 16($sp)
+sw $s2, 20($sp)
+sw $s3, 24($sp)
+sw $s4, 28($sp)
+\end{code}
+
+\begin{enumerate}[resume] 
+    \item \textbf{Lấy giá trị tại tọa độ của bàn cờ:} gọi macro \var{get} để lấy giá trị của bàn cờ tại tọa độ x và y.
+\end{enumerate}
+
+\begin{code}
+    get($a0, $a1, $s0)
+\end{code}
+
+\begin{enumerate}[resume]
+    \item \textbf{Kiểm tra điều kiện thắng của trò chơi:} 
+    \begin{itemize}
+        \item Từ tọa độ của người ta phải kiểm tra 4 hướng chính như sau: \(\searrow \) \(\nearrow\) \(\uparrow\) \(\to \). Hàm sẽ sử dụng vòng lặp để chạy 4 hướng chính sau cũng như tạo sẵn 2 mảng dùng để dễ dàng tăng thêm theo hướng cho tọa độ x, y đang đứng. 
+        \item Dùng vòng lặp để chạy cả 2 chiều theo chiều dương và chiều âm của hướng để kiểm tra lần lượt các điều kiện sau để dừng vòng lặp:
+        \begin{itemize}
+            \item Ô đang đứng có phải là vị trí hợp lệ hay không, tức là kiểm tra \(0 \leq x \leq 14\) và \(0 \leq y \leq 14\)
+            \item So sánh giá trị của bàn cờ tại tọa độ đang đứng có bằng với giá trị của người chơi hay không. \textit{Ví dụ}: Hàm có đầu vào ban đầu là \((x_0, y_0)\) có giá trị trên bàn cờ là \textbf{X}, sau khi chạy vòng lặp tới ô (\(x_1, y_1\)) nếu có giá trị bàn cờ là \textbf{X} thì tiếp tục còn là \textbf{O} thì dừng.
+        \end{itemize}
+        \item Sau khi kiểm tra điều kiện thỏa mãn, ta tăng tổng ô liên tiếp 1 đơn vị và kiểm tra thêm nếu tổng lớn hơn bằng 5 thì ngừng lặp và trả về kết quả true. Nếu không thì tiếp tục vòng lặp. Khi hết mỗi hướng đi thì ta reset lại tổng đó về 1 để đếm lại.
+        \item Sau khi hết vòng lặp mà chưa trả về kết quả thì hàm trả về fasle. 
+    \end{itemize}
+\end{enumerate}
+
+\begin{code}
+	#$s0 = Player
+	get($a0, $a1, $s0)
+	#$s1 = loop count
+	li $s1, 4
+check_win_for:
+	beqz $s1, check_win_exit
+	addi $s1, $s1, -1
+	#$s2 = count
+	li $s2, 1
+#Direction (+)
+	lw $s3, 4($sp)
+	lw $s4, 8($sp)
+check_win_loop1:
+sll $t1, $s1, 2
+la $t0, Dx
+add $t0, $t0, $t1
+lw $t0, 0($t0)
+add $s3, $s3, $t0
+la $t0, Dy
+add $t0, $t0, $t1 
+lw $t0, 0($t0)
+add $s4, $s4, $t0
+
+li $t0, 14
+blt $t0, $s3, check_win_exit1
+blt $t0, $s4, check_win_exit1
+bltz $s3, check_win_exit1
+bltz $s4, check_win_exit1
+get($s3, $s4, $t0)
+bne $t0, $s0, check_win_exit1
+
+addi $s2, $s2, 1
+li $t0, 4
+blt $t0, $s2, check_win_true
+j check_win_loop1
+
+check_win_exit1:
+#Direction (-)
+	lw $s3, 4($sp)
+	lw $s4, 8($sp)
+check_win_loop2:
+sll $t1, $s1, 2
+la $t0, Dx
+add $t0, $t0, $t1 
+lw $t0, 0($t0)
+sub $s3, $s3, $t0
+la $t0, Dy
+add $t0, $t0, $t1 
+lw $t0, 0($t0)
+sub $s4, $s4, $t0
+
+li $t0, 14
+blt $t0, $s3, check_win_exit2
+blt $t0, $s4, check_win_exit2
+bltz $s3, check_win_exit2
+bltz $s4, check_win_exit2
+get($s3, $s4, $t0)
+bne $t0, $s0, check_win_exit2
+
+addi $s2, $s2, 1
+li $t0, 4
+blt $t0, $s2, check_win_true
+j check_win_loop2
+
+check_win_exit2:
+j check_win_for
+
+check_win_exit:
+li $v0, 0
+j check_win_return
+
+check_win_true:
+li $v0, 1
+check_win_return:
+\end{code}
+
+\begin{enumerate}[resume]
+    \item \textbf{Load dữ liệu của thanh ghi trong stack sau khi xử lí:} Load dữ liệu của các thanh ghi \var{\$ra} và \var{\$s0}, \(\dots\) nhằm tránh mất mát dữ liệu khi gọi hàm.
+\end{enumerate}
+    
+\begin{code}
+	lw $ra, 0($sp)
+	lw $s0, 12($sp)
+	lw $s1, 16($sp)
+	lw $s2, 20($sp)
+	lw $s3, 24($sp)
+	lw $s4, 28($sp)
+	addi $sp, $sp, 32
+\end{code}
