@@ -4,8 +4,8 @@
     \item \textbf{Nhận tọa độ di chuyển của người chơi trong trò chơi Gomoku}: Chương trình thực hiện một quy trình có cấu trúc để đảm bảo rằng đầu vào được định dạng đúng, nằm trong phạm vi hợp lệ và trùng với một vị trí trên bàn cờ chưa bị chiếm.
     \item \textbf{Hiển thị thông báo yêu cầu người chơi}: 
     \begin{itemize}
-        \item Đối với Người chơi 1: "Người chơi 1, vui lòng nhập tọa độ của bạn: "
-        \item Đối với Người chơi 2: "Người chơi 2, vui lòng nhập tọa độ của bạn: "
+        \item Đối với Người chơi 1: ``Người chơi 1, vui lòng nhập tọa độ của bạn: ''
+        \item Đối với Người chơi 2: ``Người chơi 2, vui lòng nhập tọa độ của bạn: ''
     \end{itemize}
 \end{enumerate}
 
@@ -115,7 +115,7 @@ end_parse_y:
 \end{code}
 
 \begin{enumerate}[resume]
-    \item \textbf{Xử lý đầu vào không hợp lệ}: Nếu đầu vào không hợp lệ do định dạng sai như ``a,b'' hoặc `4', giá trị vượt phạm vi như `15,2', hoặc vị trí đã bị chiếm, chương trình sẽ hiển thị thông báo lỗi `Đầu vào không hợp lệ, vui lòng nhập lại' và quay lại bước 1 để yêu cầu người chơi nhập lại.
+    \item \textbf{Xử lý đầu vào không hợp lệ}: Nếu đầu vào không hợp lệ do định dạng sai như ``a,b'' hoặc ``4'', giá trị vượt phạm vi như ``15,2'', hoặc vị trí đã bị chiếm, chương trình sẽ hiển thị thông báo lỗi ``\texttt{invalid input, try again}'' và quay lại bước 1 để yêu cầu người chơi nhập lại.
 \end{enumerate}
 
 \begin{code}
@@ -260,7 +260,7 @@ check_win_true:
 li $v0, 1
 check_win_return:
 \end{code}
-\pagebreak
+
 \begin{enumerate}[resume]
     \item \textbf{Load dữ liệu của thanh ghi trong stack sau khi xử lí:} Load dữ liệu của các thanh ghi \var{\$ra} và \var{\$s0}, \(\dots\) nhằm tránh mất mát dữ liệu khi gọi hàm.
 \end{enumerate}
@@ -281,10 +281,10 @@ check_win_return:
     beq move_count, 225, tie # 15x15
 \end{code}
 \subsection{Ghi kết quả trò chơi}
-Sau khi đã xác định kết quá của trò chơi (hòa hoặc có người chơi thắng), chương trình thực hiện ghi kết quả ra console và file "result.txt". 
+Sau khi đã xác định kết quá của trò chơi (hòa hoặc có người chơi thắng), chương trình thực hiện ghi kết quả ra console và file ``result.txt''. 
 
 \subsubsection*{Ghi kết quả chiến thắng: } Chương trình thực hiện tuần tự các bước sau:
-\begin{enumerate}[label = +]
+\begin{enumerate}
     \item \textbf{Lưu thanh ghi vào stack:} Để đảm bảo toàn vẹn dữ liệu giống như đã nêu ở phần kiểm tra chiến thắng, chương trình thực hiện lưu lại các thanh ghi như sau:
     \begin{code}
         win_process:
@@ -314,7 +314,7 @@ write_result:
     li $v0, 4
     syscall
     \end{code}
-    \item \textbf{Ghi kết quả vào file "result.txt":} Ta cần thực hiện các bước: mở file, ghi thông báo người thắng, ghi bàn cờ, đóng file. Các bước trên được thực hiện bằng đoạn chương trình sau:
+    \item \textbf{Ghi kết quả vào file ``result.txt'':} Ta cần thực hiện các bước: mở file, ghi thông báo người thắng, ghi bàn cờ, đóng file. Các bước trên được thực hiện bằng đoạn chương trình sau:
     \begin{code}
     # Open file "result.txt"
     li $v0, 13
@@ -360,6 +360,3 @@ write_result:
     Sau khi thực hiện xong việc ghi kết quả chiến thắng, chương trình trả dữ liệu của các thanh ghi \var{\$ra}, \var{\$s0}, \var{\$t0}, tiếp tục thực thi những lệnh kế tiếp.
 \end{enumerate}
 \subsubsection*{Ghi kết quả hòa: } Chương trình thực hiện các bước tương tự như ghi kết quả chiến thắng.
-
-
-\pagebreak
