@@ -51,7 +51,6 @@ end_if:
 
 .macro SWITCH_PLAYER_TURN
 	xori player, player, 3
-	j game_loop
 .end_macro
 
 .macro PRINT_WIN
@@ -69,4 +68,21 @@ end_if:
 .macro HALT
 	li $v0 10
 	syscall
+.end_macro
+
+.macro MENU
+	jal menu
+	beq $v0, 0, exit
+	beq $v0, 1, game_loop 
+.end_macro
+.macro LOAD
+	jal load_game
+	move player, $v0
+	move move_count $v1
+.end_macro
+.macro SAVE_GAME
+	move $a0, player
+	move $a1, move_count
+	jal save_game
+        j game_loop
 .end_macro

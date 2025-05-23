@@ -6,6 +6,8 @@
     .globl	tie
 main:
     INIT
+    MENU
+    LOAD
 game_loop:
     PRINT_BOARD
     GET_MOVE
@@ -13,6 +15,7 @@ game_loop:
     CHECK_WIN
     CHECK_TIE
     SWITCH_PLAYER_TURN
+    SAVE_GAME
 win: 
 	PRINT_BOARD
 	PRINT_WIN
@@ -21,3 +24,5 @@ tie:
 	PRINT_BOARD
 	PRINT_TIE
 	HALT # End program
+exit:
+	HALT
