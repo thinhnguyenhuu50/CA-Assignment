@@ -7,6 +7,16 @@
 
 % Import fonts
 \newfontfamily\GoudySansBlack[Path=./fonts/]{Goudy_Sans_Pro_Black.otf}[NFSSFamily=gsb]
+% \newfontfamily\LucidaFax[Path=./fonts/lcd/]{LFAX.TTF}[NFSSFamily=lcd]
+\newfontfamily\LucidaFax[
+  Path=./fonts/lcd/,
+  NFSSFamily=lcd,
+  Extension = .TTF,
+  UprightFont = LFAX.TTF,
+  BoldFont = LFAXD.TTF,
+  ItalicFont = LFAXI.TTF,
+  BoldItalicFont = LFAXDI.TTF,
+  ]{LFAX.TTF}
 
 % Adjust the number of lines in minted code blocks
 \renewcommand{\theFancyVerbLine}{\textcolor[RGB]{114, 114, 114}{\normalsize\GoudySansBlack\arabic{FancyVerbLine}}}
@@ -22,6 +32,7 @@
 
 \surroundwithmdframed{minted}
 
+\usemintedstyle{default}
 \setminted{
   fontsize=auto,
   linenos=true,
@@ -34,7 +45,8 @@
   escapeinside=||,
   mathescape=false,
   tabsize=4,
-  baselinestretch=0.8
+  baselinestretch=0.8,
+  fontfamily=lcd
 }
 
 % Functionality
