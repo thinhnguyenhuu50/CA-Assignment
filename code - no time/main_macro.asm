@@ -1,8 +1,9 @@
 .include "macro.asm"
 .data
 	init_board: 			.asciiz "   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14\n0  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n2  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n3  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n4  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n5  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n6  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n7  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n8  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n9  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n10 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n11 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n12 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n13 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n14 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n"
-	X:						.asciiz "X"
-	O: 						.asciiz "O"
+	X:					.asciiz "X"
+	O: 					.asciiz "O"
+	timer:				.word 1800, 1800	# timer[0]: X, timer[1]: O (second)
 .eqv		player		$s7 	# 1: X, 2: O
 .eqv		move_count	$s6
 # Current (x, y)
@@ -23,12 +24,13 @@
 
 .macro GET_MOVE
 	move $a0, player
+	la $a1, timer
 	jal get_move
+	move x, $v0
+	move y, $v1
 .end_macro
 
 .macro UPDATE_BOARD
-	move x, $v0
-	move y, $v1
 	bne player, 1, else
 	put(x, y, X)
 	j end_if
@@ -73,16 +75,29 @@ end_if:
 .macro MENU
 	jal menu
 	beq $v0, 0, exit
-	beq $v0, 1, game_loop 
+	beq $v0, 1, new
+	beq $v0, 2, load
 .end_macro
+
 .macro LOAD
 	jal load_game
 	move player, $v0
-	move move_count $v1
+	move move_count, $v1
 .end_macro
+
 .macro SAVE_GAME
-	move $a0, player
-	move $a1, move_count
+	move $a0, x
+	move $a1, y
+	la $a2, timer
 	jal save_game
         j game_loop
+.end_macro
+
+.macro SETTING
+	jal setting
+	j main
+.end_macro
+
+.macro CLEAR_FILE_LOAD
+	jal clear_load
 .end_macro

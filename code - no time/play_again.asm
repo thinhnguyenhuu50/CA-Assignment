@@ -2,7 +2,7 @@
 # Arguments
 # $v0: 1 (yes), 0 (no)
 .data
-	buffer: 	.space  3
+	buffer: 	.space  4
 .text
 .globl play_again
 play_again:
@@ -13,7 +13,7 @@ play_again:
 loop:
 	print_str("Do you want to play again?(y/n): ")
 	la $a0, buffer
-	li $a1, 3
+	li $a1, 4
 	li $v0 8
 	syscall
 	print_str("\n")

@@ -8,6 +8,7 @@
 	prompt2:        .asciiz "Player 2, please input your coordinates: "
 	error_msg:      .asciiz "Invalid input, try again\n"
 	input_buffer:   .space 5   # Buffer for input string
+	null: .space 1
 .text
 .globl get_move
 get_move:
@@ -18,7 +19,6 @@ get_move:
     sw $s1, 8($sp)    # Save $s1 (for temp use if needed)
     sw $s2, 12($sp)
     move $s0, $a0     # Store current player
-
 input_loop:
     # Display prompt based on current player
     li $v0, 4         # Syscall to print string
@@ -35,7 +35,12 @@ print_prompt:
     la $a0, input_buffer
     li $a1, 10        # Max length of input
     syscall
-
+    # Check input string is pause
+    lb $t0, 0($a0)
+    bne $t0, 88, skip_pause
+    move $a0, $s0
+    jal pause_game
+skip_pause:
     # Call parse_input to validate and extract x,y
     la $a0, input_buffer
     jal parse_input   # Returns $v0 = x or -1, $v1 = y

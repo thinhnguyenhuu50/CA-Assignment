@@ -43,3 +43,11 @@
 	la $a0, msg
 	syscall
 .end_macro
+
+.macro get_time(%x) # x = time
+	li $v0, 30
+	div %x, $a0, 1000
+.end_macro
+
+
+

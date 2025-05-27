@@ -1,12 +1,22 @@
 .include "main_macro.asm"
 .text
-    .globl  main
+    .globl	main
     .globl 	game_loop
     .globl 	win
     .globl	tie
+    .globl	exit
+    .globl	new
+    .globl	load
+    .globl	surrender
 main:
-    INIT
     MENU
+    SETTING
+new:
+    INIT
+    CLEAR_FILE_LOAD
+    j game_loop
+load:
+    INIT
     LOAD
 game_loop:
     PRINT_BOARD
@@ -16,6 +26,8 @@ game_loop:
     CHECK_TIE
     SWITCH_PLAYER_TURN
     SAVE_GAME
+surrender:
+    SWITCH_PLAYER_TURN
 win: 
 	PRINT_BOARD
 	PRINT_WIN
