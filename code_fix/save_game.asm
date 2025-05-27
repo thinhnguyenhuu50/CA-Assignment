@@ -40,7 +40,7 @@ save_game:
     li $v0, 16
     move $a0, $s0
     syscall
-  # Write into save_file
+  # Write into time_file
 # 1. Open file (mode = 1 for write)
     li $v0, 13
     la $a0, time_file      # file name

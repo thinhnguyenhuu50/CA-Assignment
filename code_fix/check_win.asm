@@ -6,6 +6,7 @@ Dy: .word 0, 1, 1, -1
 .text
 .globl check_win
 .globl check_time
+.globl check_tie
 # Arguments:
 #   $a0: x
 #   $a1: y
@@ -118,5 +119,27 @@ lw $t0, 0($t0)
 bgt $t0, $0, return_time
 li $v1, 0
 return_time:
+jr $ra
+
+check_tie:
+# $a0: move_count
+# $a1: timer
+# $v0 = 0 : tie, 1 : player 1 win, 2 : player 2 win, 3 is none
+lw $t0, 0($a1)
+beq $t0, $0, not_compare_time
+lw $t0, 4($a1)
+lw $t1, 8($a1)
+beq $t0, $t1, not_compare_time
+slt $t0, $t1, $t0
+addi $v0, $t0, 1
+bne $a0, 255, not_compare_time
+jr $ra
+
+not_compare_time:
+beq $a0, 255, tie_return
+li $v0, 3
+jr $ra
+tie_return:
+li $v0, 0
 jr $ra
 

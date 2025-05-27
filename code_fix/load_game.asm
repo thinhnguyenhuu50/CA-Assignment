@@ -9,6 +9,7 @@
 .text
 .globl load_game
 .globl clear_load
+.globl clear_time
 load_game:
     # Save registers
     addi $sp, $sp, -16
@@ -122,4 +123,35 @@ clear_load:
     move $a0, $s0
     li   $v0, 16          # syscall: close file
     syscall
+    jr $ra
+    
+
+clear_time:
+#a0: timer
+    # Save registers
+    addi $sp, $sp, -12
+    sw $ra, 0($sp)
+    sw $s0, 4($sp)
+    sw $a0, 8($sp)      # for file descriptor
+# Write into time_file
+# 1. Open file (mode = 1 for write)
+    li $v0, 13
+    la $a0, time_file      # file name
+    li $a1, 1         # mode = 1 (write)
+    syscall
+    move $s0, $v0     # file descriptor ? $s0
+# 2. Write to file
+    li $v0, 15
+    move $a0, $s0         # file descriptor
+    lw $a1, 8($sp)       # buffer address
+    li $a2, 12           # number of bytes (manual!)
+    syscall
+# 3. Close file
+    li $v0, 16
+    move $a0, $s0
+    syscall
+# Restore registers
+    lw $ra, 0($sp)
+    lw $s0, 4($sp)
+    addi $sp, $sp, 12
     jr $ra

@@ -69,7 +69,13 @@ end_if:
 .end_macro
 
 .macro CHECK_TIE
-	beq move_count, 225, tie # 15x15
+	move $a0, move_count
+	la $a1, timer
+	jal check_tie
+	beq $v0, $0, tie # 15x15
+	beq $v0, player, win
+	xori $t0, $v0, 3
+	beq $t0, player, surrender
 .end_macro
 
 .macro SWITCH_PLAYER_TURN
@@ -122,6 +128,10 @@ end_if:
 
 .macro CLEAR_FILE_LOAD
 	jal clear_load
+	la $a0, timer
+	jal init_setting
+	la $a0, timer
+	jal clear_time
 .end_macro
 
 .macro INIT_SETTING

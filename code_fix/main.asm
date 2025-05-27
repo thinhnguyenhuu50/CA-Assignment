@@ -33,10 +33,12 @@ surrender:
 win: 
 	PRINT_BOARD
 	PRINT_WIN
+	CLEAR_FILE_LOAD
 	HALT # End program
 tie:
 	PRINT_BOARD
 	PRINT_TIE
+	CLEAR_FILE_LOAD
 	HALT # End program
 exit:
 	HALT
