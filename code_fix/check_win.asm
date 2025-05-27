@@ -130,13 +130,13 @@ beq $t0, $0, not_compare_time
 lw $t0, 4($a1)
 lw $t1, 8($a1)
 beq $t0, $t1, not_compare_time
-slt $t0, $t1, $t0
+slt $t0, $t0, $t1
 addi $v0, $t0, 1
-bne $a0, 255, not_compare_time
+bne $a0, 225, not_compare_time
 jr $ra
 
 not_compare_time:
-beq $a0, 255, tie_return
+beq $a0, 225, tie_return
 li $v0, 3
 jr $ra
 tie_return:
