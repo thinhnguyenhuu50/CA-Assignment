@@ -1,6 +1,8 @@
 .include "macro.asm"
 # Arguments:
 #   $a0: current player
+#    $a1: timer
+#    $a2: cur_time
 #	$v0: x
 #	$v1: y
 .data
@@ -13,12 +15,16 @@
 .globl get_move
 get_move:
 	# Save registers
-    addi $sp, $sp, -16
+    addi $sp, $sp, -24
     sw $ra, 0($sp)
     sw $s0, 4($sp)    # Save $s0 (current player)
     sw $s1, 8($sp)    # Save $s1 (for temp use if needed)
     sw $s2, 12($sp)
+    sw $s3, 16($sp)
+    sw $s4, 20($sp)
     move $s0, $a0     # Store current player
+    move $s3, $a1
+    move $s4, $a2
 input_loop:
     # Display prompt based on current player
     li $v0, 4         # Syscall to print string
@@ -37,8 +43,10 @@ print_prompt:
     syscall
     # Check input string is pause
     lb $t0, 0($a0)
-    bne $t0, 88, skip_pause
+    bne $t0, 80, skip_pause
     move $a0, $s0
+    move $a1, $s3
+    move $a2, $s4
     jal pause_game
 skip_pause:
     # Call parse_input to validate and extract x,y
@@ -67,7 +75,9 @@ get_move_exit:
     lw $s0, 4($sp)
     lw $s1, 8($sp)
     lw $s2, 12($sp)
-    addi $sp, $sp, 16
+    lw $s3, 16($sp)
+    lw $s4, 20($sp)
+    addi $sp, $sp, 24
     jr $ra
     
 # Input: $a0 = address of input string

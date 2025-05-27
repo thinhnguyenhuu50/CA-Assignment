@@ -90,7 +90,7 @@ move $s0, $v0
 li $v0, 14
 move $a0, $s0      # File descriptor
 lw $a1, 8($sp)    # Buffer input
-li $a2, 8
+li $a2, 12
 syscall
 # 3. Close file
 li $v0, 16

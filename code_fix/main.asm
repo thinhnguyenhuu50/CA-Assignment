@@ -13,9 +13,12 @@ main:
     SETTING
 new:
     INIT
+    INIT_SETTING
+    CLEAR_FILE_LOAD
     j game_loop
 load:
     INIT
+    INIT_SETTING
     LOAD
 game_loop:
     PRINT_BOARD

@@ -51,7 +51,7 @@ save_game:
     li $v0, 15
     move $a0, $s0         # file descriptor
     lw $a1, 8($sp)       # buffer address
-    li $a2, 8           # number of bytes (manual!)
+    li $a2, 12           # number of bytes (manual!)
     syscall
 # 3. Close file
     li $v0, 16

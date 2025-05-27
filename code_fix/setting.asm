@@ -5,6 +5,7 @@ buffer: .word 1, 1800, 1800
 enter: .space 4
 .text
 .globl setting
+.globl init_setting
 setting:
 	# push
 	addi $sp, $sp, -8
@@ -121,4 +122,35 @@ writefile:
     move $a0, $s0
     syscall
 j loopx
+init_setting:
+	addi $sp, $sp, -12
+	sw $ra, 0($sp)
+	sw $s0, 4($sp)
+	sw $s1, 8($sp)
+	move $s1, $a0
+	# Open file input (mode 0 = read)
+li $v0, 13
+la $a0, setting_file  
+li $a1, 0          # mode 0 = read
+syscall
+move $s0, $v0      
+# Read file input
+li $v0, 14
+move $a0, $s0      # File descriptor
+move $a1, $s1    # Buffer input
+li $a2, 12
+syscall
+# 3. Close file
+li $v0, 16
+move $a0, $s0
+syscall
+
+	lw $ra, 0($sp)
+	lw $s0, 4($sp)
+	lw $s1, 8($sp)
+	addi $sp, $sp, 12
+	jr $ra
+
+
+
 

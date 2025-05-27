@@ -3,7 +3,8 @@
 	init_board: 			.asciiz "   0  1  2  3  4  5  6  7  8  9 10 11 12 13 14\n0  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n1  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n2  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n3  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n4  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n5  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n6  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n7  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n8  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n9  .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n10 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n11 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n12 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n13 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n14 .  .  .  .  .  .  .  .  .  .  .  .  .  .  .\n"
 	X:					.asciiz "X"
 	O: 					.asciiz "O"
-	timer:				.word 1800, 1800	# timer[0]: X, timer[1]: O (second)
+	timer:				.word 1, 1800, 1800	# timer[0]: X, timer[1]: O (second)
+	cur_time:				.word 0
 .eqv		player		$s7 	# 1: X, 2: O
 .eqv		move_count	$s6
 # Current (x, y)
@@ -17,14 +18,8 @@
 .end_macro
 
 .macro PRINT_BOARD
-    print_str("<-------------------------------------------------------------------->\n")
-    print_str("Time Player 1: ")
-    lw $t0, timer
-    print_int($t0)
-    print_str("                        Time Player 2: ")
-    lw $t0, timer + 4
-    print_int($t0)
-    print_str("\n")
+    la $a0, timer
+    jal print_time
     li $v0, 4           # Syscall for print string
     la $a0, board      
     syscall
@@ -32,22 +27,24 @@
 
 .macro GET_MOVE
 	get_time($t0)
-	sw $t0, Time
+	sw $t0, cur_time
+	
 	move $a0, player
 	la $a1, timer
+	la $a2, cur_time
 	jal get_move
 	move x, $v0
 	move y, $v1
-	get_time($t1)
-	lw $t0, Time
-	sub $t1, $t1, $t0
+	
+	get_time($t0)
+	lw $t1, cur_time
+	sub $t0, $t0, $t1
+	la $t1, timer
 	sll $t2, player, 2
-	addi $t2, $t2, -4
-	la $t3, timer
-	add $t3, $t3, $t2
-	lw $t4, 0($t3)
-	sub $t4, $t4, $t1
-	sw $t4, 0($t3)
+	add $t1, $t2, $t1
+	lw $t2, 0($t1)
+	sub $t2, $t2, $t0
+	sw $t2, 0($t1)
 .end_macro
 
 .macro UPDATE_BOARD
@@ -64,13 +61,11 @@ end_if:
 	move $a0, x
 	move $a1, y
 	jal check_win  # check win
+	move $a0, player
+	la $a1, timer
+	jal check_time
+	beq $v1, 0, surrender
 	beq $v0, 1, win
-	sll $t2, player, 2
-	addi $t2, $t2, -4
-	la $t3, timer
-	add $t3, $t3, $t2
-	lw $t4, 0($t3)
-	bgt $0, $t4, surrender
 .end_macro
 
 .macro CHECK_TIE
@@ -84,13 +79,13 @@ end_if:
 .macro PRINT_WIN
 	jal win_process
 	jal play_again
-	beq $v0, 1, main
+	beq $v0, 1, new
 .end_macro
 
 .macro PRINT_TIE
 	jal tie_process
 	jal play_again
-	beq $v0, 1, main
+	beq $v0, 1, new
 .end_macro
 
 .macro HALT
@@ -106,6 +101,7 @@ end_if:
 .end_macro
 
 .macro LOAD
+	la $a0, timer
 	jal load_game
 	move player, $v0
 	move move_count, $v1
@@ -122,4 +118,13 @@ end_if:
 .macro SETTING
 	jal setting
 	j main
+.end_macro
+
+.macro CLEAR_FILE_LOAD
+	jal clear_load
+.end_macro
+
+.macro INIT_SETTING
+	la $a0, timer
+	jal init_setting
 .end_macro

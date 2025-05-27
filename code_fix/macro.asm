@@ -45,8 +45,15 @@
 .end_macro
 
 .macro get_time(%x) # x = time
-	li $v0, 30
-	div %x, $a0, 1000
+    	li $v0, 30
+	syscall
+	move $t0, $a0 
+	li $t1, 1000
+	div $t0, $t1
+	mflo $t0
+	li $t1, 32000
+	div $t0, $t1
+	mfhi %x
 .end_macro
 
 

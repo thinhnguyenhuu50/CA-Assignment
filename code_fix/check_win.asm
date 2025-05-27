@@ -5,6 +5,7 @@ Dy: .word 0, 1, 1, -1
 
 .text
 .globl check_win
+.globl check_time
 # Arguments:
 #   $a0: x
 #   $a1: y
@@ -103,3 +104,19 @@ check_win_return:
 	lw $s4, 28($sp)
 	addi $sp, $sp, 32
 jr $ra
+
+check_time:
+#a0: player
+#a1: timer
+#v1: return True of False
+li $v1, 1
+lw $t0, 0($a1)
+beq $t0, $0, return_time
+sll $t0, $a0, 2
+add $t0, $t0, $a1
+lw $t0, 0($t0)
+bgt $t0, $0, return_time
+li $v1, 0
+return_time:
+jr $ra
+
